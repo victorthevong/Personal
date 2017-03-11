@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/barbell"
+    tools:context="com.example.vinhvong.myapplication.MainActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
+
+        <!--select exercise text-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:ignore="UselessParent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/please_select_one_of_the_exercises_below"
+                    android:textSize="40sp"
+                    android:textColor="#000000"/>
+
+            </LinearLayout>
+
+            <!--exercises 1-3-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pushups"
+                    android:id="@+id/pushups"
+                    android:textSize="25sp"
+                    android:textColor="#0000FF"
+                    android:onClick="generalclick" />
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/situps"
+                    android:id="@+id/situps"
+                    android:textSize="25sp"
+                    android:textColor="#0000FF"
+                    android:onClick="generalclick"/>
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/squats"
+                    android:id="@+id/squats"
+                    android:textSize="25sp"
+                    android:textColor="#0000FF"
+                    android:onClick="generalclick"/>
+
+            </LinearLayout>
+
+            <!--exercises 4-6-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/leg_lifts"
+                    android:id="@+id/leglifts"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/planking"
+                    android:id="@+id/planking"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/jumpingjacks"
+                    android:id="@+id/jumpingjacks"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+            </LinearLayout>
+
+            <!--exercises 7-9-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pullups"
+                    android:id="@+id/pullups"
+                    android:textSize="25sp"
+                    android:textColor="#0000FF"
+                    android:onClick="generalclick"/>
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cycling"
+                    android:id="@+id/cycling"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/walking"
+                    android:id="@+id/walking"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+            </LinearLayout>
+
+            <!--exercises 10-12-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/jogging"
+                    android:id="@+id/jogging"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/swimming"
+                    android:id="@+id/swimming"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+                <RadioButton
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stairclimbing"
+                    android:id="@+id/stairclimbing"
+                    android:textSize="25sp"
+                    android:onClick="generalclick"/>
+
+            </LinearLayout>
+
+            <!--enter num reps or mins and number field-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:paddingTop="20dp"
+                    android:layout_width="380dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/please_enter_the_number_of"
+                    android:textSize="30sp"
+                    android:textColor="#000000"
+                    android:id="@+id/enternum"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:layout_marginStart="27dp"
+                    android:id="@+id/number"
+                    android:textSize="25sp"
+                    android:textColorHint="#000000"
+                    android:hint="@string/minsorreps" />
+
+
+            </LinearLayout>
+
+            <!--calculation of calories and display via exercises-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/calculate"
+                    android:onClick="calculateCalories"
+                    android:textSize="25sp"
+                    android:id="@+id/calculate"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/calories_calculated"
+                    android:textColorHint="#000000"
+                    android:paddingLeft="15dp"
+                    android:textSize="35sp"
+                    android:textColor="#000000"
+                    android:id="@+id/caloriescalculated"
+                    tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+            </LinearLayout>
+
+            <!--calculation of calories and display via requested calorie burn-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/calculate_exercises"
+                    android:onClick="calculateExercises"
+                    android:textSize="25sp"
+                    android:id="@+id/calculate2"/>
+
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:hint="@string/caloriestoburn"
+                    android:textColorHint="#000000"
+                    android:paddingLeft="15dp"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/exercisescalculated"
+                    tools:ignore="RtlHardcoded,RtlSymmetry" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="15dp"
+                    android:textSize="30sp"
+                    android:text="@string/equivalent_exercises_for_same_calorie_burn"
+                    android:textColor="#000000"
+                    android:id="@+id/equiv"/>
+
+
+            </LinearLayout>
+
+            <!-- similar exercises and values associated with them-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/pushups_reps"
+                    android:textColor="#0000FF"
+                    android:id="@+id/extra0"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra0value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/situps_reps"
+                    android:textColor="#0000FF"
+                    android:id="@+id/extra1"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra1value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/squats_reps"
+                    android:textColor="#0000FF"
+                    android:id="@+id/extra2"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra2value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/leg_lifts_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra3"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra3value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/planking_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra4"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra4value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/jumping_jacks_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra5"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra5value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/pullups_reps"
+                    android:textColor="#0000FF"
+                    android:id="@+id/extra6"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra6value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/cycling_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra7"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra7value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/walking_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra8"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra8value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/jogging_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra9"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra9value"/>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/swimming_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra10"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra10value"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:text="@string/stair_climbing_mins"
+                    android:textColor="#000000"
+                    android:id="@+id/extra11"/>
+
+                <TextView
+                    android:layout_width="290dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="25sp"
+                    android:textColor="#000000"
+                    android:id="@+id/extra11value"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>
+
+

@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Crunch Time</string>
+    <string name="pushups">PushUps</string>
+    <string name="situps">SitUps</string>
+    <string name="squats">Squats</string>
+    <string name="leg_lifts">Leg-Lifts</string>
+    <string name="planking">Planking</string>
+    <string name="jumpingjacks">J_Jacks</string>
+    <string name="pullups">PullUps</string>
+    <string name="cycling">Cycling</string>
+    <string name="walking">Walking</string>
+    <string name="jogging">Jogging</string>
+    <string name="swimming">Swimming</string>
+    <string name="stairclimbing">Stairs</string>
+    <string name="minsorreps">Mins(Black) or Reps(Blue)</string>
+    <string name="calculate">Calculate Calories</string>
+    <string name="calories_calculated">Calories Calculated</string>
+    <string name="please_enter_the_number_of">Please Enter:</string>
+    <string name="please_select_one_of_the_exercises_below">Please select one of the exercises below:</string>
+    <string name="calculate_exercises">Calculate Exercises</string>
+    <string name="caloriestoburn">Input Calories</string>
+    <string name="cycling_mins">Cycling Mins:</string>
+    <string name="equivalent_exercises_for_same_calorie_burn">Equivalent Exercises For Same Calorie Burn:</string>
+    <string name="jogging_mins">Jogging Mins:</string>
+    <string name="jumping_jacks_mins">Jumping Jacks Mins:</string>
+    <string name="leg_lifts_mins">Leg-Lifts Mins:</string>
+    <string name="planking_mins">Planking Mins:</string>
+    <string name="pullups_reps">Pullups Reps:</string>
+    <string name="string_pullups_reps" />
+    <string name="pushups_reps">Pushups Reps:</string>
+    <string name="situps_reps">SitUps Reps:</string>
+    <string name="squats_reps">Squats Reps:</string>
+    <string name="stair_climbing_mins">Stair Climbing Mins:</string>
+    <string name="swimming_mins">Swimming Mins:</string>
+    <string name="walking_mins">Walking Mins:</string>
+
+</resources>

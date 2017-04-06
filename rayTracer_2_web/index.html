@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Ray Tracer, Part 2</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
+<h1 align="middle">Project 3-2: Ray Tracer, Part 2</h1>
+<h2 align="middle">Victor Vong, CS184-aax</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>In this project we built on top of project 3-1 by implementing BSDF's for Mirror, Glass and Microfacet materials. We then incorporated environment lighting as well as depth of field controlling both aperature and focal distance of our camera (allowing specific area focus on images).</p>
+
+<h2 align="middle">Part 1: Mirror and Glass Materials</h2>
+
+<p> Show a sequence of seven images of scene CBspheres.dae rendered with max_ray_depth set to 0, 1, 2, 3, 4, 5, and 100. The other settings should be at least 64 samples per pixel and 4 samples per light. Point out the new multibounce effects that appear in each image.</p>
+
+<p>As we can see, when depth = 0 the balls are completely dark as no light ever hits the mirror (left) and glass (right) balls. When depth = 1, we get a little light showcasing the mirror ball, and some reflection on the glass ball, but still heavily noisy. At depth = 2, we can start to see the refracting within the glass ball having multiple bounces, but the reflection of the glass ball in the mirror ball is still dark. At depth = 3, we see the glass ball in the mirror ball is now accurate and a light spot underneath the glass ball has emerged. In depth = 4, we now see an added circular light spot to the right of the glass ball on the wall. At depth = 5 and 100, the images are roughly similar to depth = 4 signaling we get roughly full effects for this image at depth = 4. </p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_1/spheres_1_m0_s64_l4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Mirror and Glass Sphere(s) with ray depth 0</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_1/spheres_1_m1_s64_l4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Mirror and Glass Sphere(s) with ray depth 1</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_1/spheres_1_m2_s64_l4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Mirror and Glass Sphere(s) with ray depth 2</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_1/spheres_1_m3_s64_l4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Mirror and Glass Sphere(s) with ray depth 3</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_1/spheres_1_m4_s64_l4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Mirror and Glass Sphere(s) with ray depth 4</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_1/spheres_1_m5_s64_l4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Mirror and Glass Sphere(s) with ray depth 5</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+<br>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_1/spheres_1_m100_s64_l4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Mirror and Glass Sphere(s) with ray depth 100</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+
+<h2 align="middle">Part 2: Microfacet Material</h2>
+
+<p>Show a sequence of 4 images of scene CBdragon_microfacet_au.dae rendered with αα set to 0.005, 0.05, 0.25 and 0.5. The other settings should be at least 128 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Describe the differences between different images. Note that, to change the αα, just open the .dae file and search for microfacet.</p>
+
+<p>The different alpha values create different roughness levels for the metal-gold dragon. A low alpha value has a little more noise in our images (high sampling eliminates), but we can see the metal attribute of the dragon is prevelant. As alpha increases the dragon metal attribute turns more matte and thus has an overall smoother appearance compared to the first alpha value.</p>
+
+<br>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_2/cbdragon_2_alpha_005.png" align="middle" width="500px"/>
+        <figcaption align="middle">Golden Dragon with alpha value .005</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_2/cbdragon_2_alpha_05.png" align="middle" width="500px"/>
+        <figcaption align="middle">Golden Dragon with alpha value .05</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_2/cbdragon_2_alpha_25.png" align="middle" width="500px"/>
+        <figcaption align="middle">Golden Dragon with alpha value .25</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_2/cbdragon_2_alpha_5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Golden Dragon with alpha value .5</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+<p>Show two images of scene CBbunny_microfacet_cu.dae rendered using cosine hemisphere sampling (default) and your importance sampling. The sampling rate should be fixed at 64 samples per pixel and 1 samples per light. The number of bounces should be at least 5. Briefly discuss their difference.</p>
+
+<p>With cosine hemisphere sampling, we could continually sample from areas not important and or relevant in the overall added light for certain areas of the image. Thus, cosine hemisphere sampling produces a noisy image, but it is good to note that eventually with a much higher sampling rate the image should converge to the correct output (right bunny). When using importance sampling, we converge much faster by focusing on the most important areas that contribute to certain area lighting and thus produce a significantly better output in a smaller time frame.</p>
+
+<br>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_2/cbbunny_2_coshemsamp_s64_l1_m5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Copper Bunny rendered using cosine hemisphere sampling</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_2/cbbunny_2_importsamp_s64_l1_m5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Copper Bunny rendered using importance sampling</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+<p>Show at least one image with some other conductor material, replacing eta and k. Note that you should look up values for real data rather than modifying them arbitrarily. Tell us what kind of material your parameters correspond to.</p>
+
+<p>I rendered a cobalt and gold bunny. These were rendered with 64 samples, 1 light, and a max depth of 5.</p>
+
+<br>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_2/cobaltbunny_2_s64_l1_m5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Cobalt Bunny</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_2/goldbunny_2_s64_l1_m5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Bunny</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+<h2 align="middle">Part 3: Environment Light</h2>
+
+<p>Show the probability_debug.png file for the .exr file you are using, generated using the save_probability_debug() helper function after initializing your probability distributions.</p>
+
+<p> I chose to render my images on a field background. I showcase a very cool looking error with my probability distribution calculation. Turns out I misread the double summation and just completely miscalculated one portion entirely. It created a grain like surface with the colors and I thought it was interesting as no one else seemed to get this error (good fortune for them honestly).</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_3/field.jpg" align="middle" width="500px"/>
+        <figcaption align="middle">field.exr</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_3/probability_debug.png" align="middle" width="500px"/>
+        <figcaption align="middle">Correct Probability Distributions</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_3/probability_debug_error.png" align="middle" width="500px"/>
+        <figcaption align="middle">Wrong Probability Distributions</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+<p>Use the bunny_microfacet_cu_unlit.dae / bunny_unlit.dae scene and your environment map .exr file and render two pictures, one with uniform sampling and one with importance sampling. Use 4 samples per pixel and 64 samples per light in each. Compare noise levels.</p>
+
+<p>For the non-copper bunny it is harder to distinguish the noise levels. However for the copper bunny we can clearly see much more noise on the uniform sampled bunny. It is also clear to note for both uniform sampling bunnys they are slightly lighter in color than the importance sampled bunnys. From importanance sampling we can see also how the light comes from the right side and allows different shading of the bunnys.</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_3/bunny_unlit_3_uniformsamp_s4_l64_m5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Unlit Bunny rendered using Uniform Sampling</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_3/bunny_unlit_3_importsamp_s4_l64_m5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Unlit Bunny rendered using Importance Sampling</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_3/copperbunny_unlit_3_uniformsamp_s4_l64_m5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Copper Bunny rendered using Uniform Sampling</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_3/copperbunny_unlit_3_importsamp_s4_m5_l64.png" align="middle" width="500px"/>
+        <figcaption align="middle">Copper Bunny rendered using Importance Sampling</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+<h2 align="middle">Part 4: Depth of Field</h2>
+
+<p>Show a "focus stack" where you focus at 4 visibly different depths through a scene.</p>
+
+<p> I used a fixed aperture size of 0.2. As I changed my focal distance I was able to focus on different parts of the dragon ranging from its front, midsections, and tail area.</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_4/focus_stack/cbdragon_4_bpt2_d1pt2.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .2 and focal distance 1.2</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_4/focus_stack/cbdragon_4_bpt2_d1pt45.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .2 and focal distance 1.45</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_4/focus_stack/cbdragon_4_bpt2_d1pt7.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .2 and focal distance 1.7</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_4/focus_stack/cbdragon_4_bpt2_d1pt9.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .2 and focal distance 1.9</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+<p>Show a sequence of 4 pictures with visibly different aperture sizes, all focused at the same point in a scene.</p>
+
+<p> I used a fixed focal distance of 1.45 (the front of the dragon). As the aperature increases we see we get more blurriness on the overall image. As the aperature is closest to 0, we have an ideal pin-hole camera where eerything in the image is focused.</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_4/varying_aperature/cbdragon_4_bpt03_d1pt45.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .03 and focal distance 1.45</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_4/varying_aperature/cbdragon_4_bpt1_d1pt45.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .1 and focal distance 1.45</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="3_2_images/3_2_4/varying_aperature/cbdragon_4_bpt2_d1pt45.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .2 and focal distance 1.45</figcaption>
+      </td>
+      <td>
+        <img src="3_2_images/3_2_4/varying_aperature/cbdragon_4_bpt6_d1pt45.png" align="middle" width="500px"/>
+        <figcaption align="middle">Gold Dragon with aperature .6 and focal distance 1.9</figcaption>
+      </td>
+    </tr>
+    <br>
+  </table>
+</div>
+<br>
+
+
+</div>
+</body>
+</html>

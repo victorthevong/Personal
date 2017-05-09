@@ -1,0 +1,263 @@
+<style type="text/css">
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+	html, body{
+   height:100%;
+   width: 100%;
+   margin: 0;
+   padding: 0;
+   border: 0;
+}
+p, h1 {
+	margin-left: 10px;
+}
+img {
+	border-radius: 3px;
+}
+#wrapper {
+	padding: 10;
+}
+#wrapper td {
+   text-align: center;
+}
+</style>
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<title>Fluid Simulation</title>
+</head>
+<body class="container">
+<h1 align="center"> CS 184 - Fluid Simulation Final Report</h1>
+<h4 align="right"> Blake Tickell</h2>
+<h4 align="right"> Victor Vong</h2>
+<h1>Introduction</h1>
+<p>Fluid dynamics are involced in a large portion of interesting scenes that computer graphics aims to render convincingly. From oceans to rainy cities, water and other fluids add more dynamism to a scene and lend believability to a render if done succesfuly. In this project, we aimed to simulate fluids with a particle based algorithm. With some calculus and using the OpenGL framework, we attempted to render a system of particles that not only emulated real world liquids, but could also be rendered efficiently.</p>
+<h1>The setup</h1>
+<p>In order to implement our simulation, we first required a framework. Beginning with a template, provided by CS184 staff, we needed to add two key functional components to suit our needs. The first was a way to store and render geometry in the scene other than the particles. To do this, we construct meshes in Blender, a commonly used rendering tool, and then export those scenes to an obj format. Using this file, we parse the given vertex and face information into arrays of vertices representing points, and arrays of polygons representing faces. This functionality makes our modeling more robust, as it allows for more complicated meshes, that can not be hardcoded like the cube that we include in our examples. </p>
+<p>The second functional item that we needed to create was a way of stitching together snapshots from the simulation into one, uninterupted video stream. To do this, we take frame by frame screenshots of the camera view, and store them in a directory. We then take these frames and stitch them together using the standard OpenCV framework. This system allows the user to record their render as it is taking place, but is also smooth through user pauses and slowdown due to computational struggle. This means that if you record some number of iterations of the simulation, your frame rate remains constant, based on your given parameters.
+<pre><code>void idle(void)
+{
+
+    if (start) {
+        particles.step(parser.polys, parser.vertices);
+        glutPostRedisplay();
+        if(frame/render_step >= 300){
+            return;
+        }
+        if(frame%render_step == 0)
+        {
+
+            // window detection has to be based on glm library 
+
+            #if OUTPUT_ANIMATION
+            cv::Mat3b image(height, width);
+            glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, image.data);
+            cv::flip(image, image, 0);
+            char fn[512];
+            // sprintf(fn, "result/%04d.jpeg", frame/render_step);
+            sprintf(fn, "result/%04d.png", frame/render_step);
+            cv::imwrite(fn, image);
+            // fprintf(stderr,"Finishes writing image\n");
+
+            if (!oVideoWriter.isOpened()) {
+                Mat image;
+                image = imread("result/0000.png", CV_LOAD_IMAGE_COLOR);  // first png created
+                oVideoWriter.open("path/MyVideo.mp4", CV_FOURCC('M','P','4','2'), 3, image.size(), true); // mpeg-4 is the fourcc code
+            }
+
+            oVideoWriter.write(image);
+
+            #endif
+        }
+        frame++;
+    }</code></pre>
+<h1>The Algorithm</h1>
+<p>In this project, we implemented the algorithm mentioned in Mackler and Müller (which includes some mathemcatical concepts introduced in , which breaks the fluid simulation into several discrete steps.</p>
+<ol>
+	<li>
+		<p>Use known forces to estimate the velocity of the particle. Using this velocity, estimate a new position, which we will improve upon later.</p> 
+	</li>
+	<li>
+		<p>Find neighboring particles. This allows us to efficiently make future computations</p>
+	</li>
+	<li>
+		<p>Begin iterations</p>
+	</li>
+	<li>
+		<p>For all particles calculate &lambda;</p>
+	</li>
+	<li>
+		<p>For all particles calculate position update vector</p>
+	</li>
+	<li>
+		<p>For all particles update the new position by adding in correction vector. If iterations not finished, loop to 4.<p>
+	</li>
+	<li>
+		<p>Update velocity and position.</p>
+	</li>
+</ol>
+<h1>Finding Neighbors</h1>	
+<p>In order to achieve a reasonable run time, we needed to avoid an O(n<sup>2</sup>) neighbor-find operation. This is the naive implementation.</p>
+<p>To avoid this, we utilize positional hashing. We construct a map that maps uniform cubes in space to bins, and then we take a pass through our particle array, storing a vector of neighbors for each one by checking its bin in the map as well as all neighboring bins in a 3x3x3 cube (we need to check neighboring bins to be sure we don't miss points close to bin boundaries). This is the loop with bin hashing:
+<pre><code>    // Neighbor Find
+    double h = .15; // 2 x average particle distance
+    int i = 0;
+    std::map<std::string, std::vector<Particle>> neighbor_map;
+    for (Particle &par : particles) {
+        ivec3 k = ivec3((int) floor(par.x_approx / h)[0], (int) floor(par.x_approx / h)[1], (int) floor(par.x_approx / h)[2]);
+        std::string key = glm::to_string(k);
+        if (neighbor_map.find(key) == neighbor_map.end()) {
+            std::vector<Particle> bin = std::vector<Particle>();
+            neighbor_map[key] = bin;
+        }
+        neighbor_map[key].push_back(par);
+
+    }
+
+    for (Particle& par : particles) {
+        dvec3 flooredvec = floor(par.x_approx / h);
+        std::string key = glm::to_string(flooredvec);
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                for (int k = -1; k < 2; k++) {
+                    std::string key_prime = glm::to_string(ivec3((int) flooredvec[0] + i, (int) flooredvec[1] + j, (int) flooredvec[2] + k));
+                    if (neighbor_map.find(key_prime) != neighbor_map.end()) {
+                        std::vector<Particle> bin = neighbor_map[key_prime];
+                        for (Particle n : bin) {
+                            if (length(n.x_approx - par.x_approx) <= h) {
+                                par.neighbors.push_back(n);
+                            }
+                        }
+                           
+                    } 
+                }
+            }
+        }
+    }</code></pre></p>
+<h1>Calculating &lambda; for each particle.</h1>
+<p>One of the main properties that govern how a fluid interacts with its surroundings is the concept of incompressibility. This is the idea that the mass density of a fluid is relatively constant throughout its body. It is <i>incompressable</i>. To model this, we construct a system of constraints C<sub>i</sub> where the i-th constraint is a constraint for the region surrounding th i-th molecule.
+<table id="wrapper">
+  <tr>
+    <td><img src="images/constraints.png" alt="" width="40%"></td>
+  </tr>
+</table></p>
+<p>Next we need to calculate regional particle densities. This is done by summing over the Poly6 kernel evaluated on the vectors between the particle position and its neighbors.</p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/rho.png" alt="" width="40%"></td>
+  </tr>
+</table>
+<p>Where in the above sum, W is the poly6 kernel defined as,</p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/poly6.png" alt="" width="40%"></td>
+  </tr>
+ </table>
+ <p>
+The poly6 kernel does well as a mass-density function as it is even and integrates to 1. Under the assumption that the molecules all have the same mass, we can drop the mass in the sum as it does not affect our system solution. Next we approximate a solution to our constraints by stating that C(p + &Delta;p) = 0. We then approximate this condition by approximating &Delta;p as,</p>
+
+<table id="wrapper">
+  <tr>
+    <td><img src="images/approx_p.png" alt="" width="40%"></td>
+  </tr>
+</table>
+<p>
+Lastly, we approximate a solution to the constraint system with a series of newton's method updates. Newton's method works by fitting a series of quadratics to a function and moves the current point to the minimum of that quadratic. Over many iterations, the method hopes to acheive a good approximation of an optimum, which works especially well for convex functions. </p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/approx.png" alt="" width="40%"></td>
+  </tr>
+</table>
+
+<p>
+The only thing left to calculate in order for us to compute our lambda values. We need to compute the gradient of our constraints, where we use the spiky kernel to avoid some unwelcome properties of the poly6 kernel. This results in the following calculation, where we seperate the gradient into two cases, one when considering the particle itself and the other for neighboring particles.</p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/gradient.png" alt="" width="40%"></td>
+  </tr>
+</table>
+<p>Lastly, we plug the gradient we calculate in to the previous definition, and solve the system for &lambda; where we have added an epsilon term into the denominator to avoid instability when fluid is close to uncoupling. This parameter is tuned and fixed over iterations.</p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/lambda.png" alt="" width="80%"></td>
+  </tr>
+</table>
+<h1>Position Update</h1>
+<p>Having calculated the lambdas, we need to use them to update the particles positions for this iteration. To do this, we iterate through the particles and compute their correction vectors. Then add the correction vector to its current position for this time step.</p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/correction_p.png" alt="" width="40%"></td>
+   </tr>
+</table>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/position_update.png" alt="" width="40%"></td>
+   </tr>
+</table>
+<p>After we exceed the number of iterations dictated as a hyperparameter, we have to update the actual position of the particle to allow our renderer to actually display the particles in their new positions. After calculating the approximation for the new position, we perform the following update for velocity,</p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/update_vel.png" alt="" width="40%"></td>
+   </tr>
+</table>
+<p>Unfortunately we were not able to get the vorticity component of this update working, but the idea is to preserve energy that is lost from damping in most numerical methods. Essentially, throwing energy back into the system based on some vector calculus allows for more realistic splashing effects. Additionaly there are ways to add liquid viscocity which incorporates the tendency of fluids to stick together due to internal friction, but we did not explore these.</p>
+<h1>Tensile Instability</h1>
+<p>The previous description of our algorithm works well, but we it tends to become unstable when particles become more dispersed throughout the scene and a particle is not capable of approaching the rest density of the liquid. When this is the case, large negative pressures can cause heavy clumping. To avoid this, Monaghan [2000] suggests that adding a corrective term to the &Delta;p equation. This </p>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/tensile.png" alt="" width="100%"></td>
+   </tr>
+</table>
+<table id="wrapper">
+  <tr>
+    <td><img src="images/updated_update.png" alt="" width="100%"></td>
+   </tr>
+</table>
+<p>Where q is a fixed point defined in the boundary of our neighbor space and n and k are parameters to be tuned. The idea with this update is to promote a more distributed system by avoiding large clumps.</p>
+
+<h1>Results</h1>
+<p>In the simulation, you can see some of the behavior you would expect from a fluid-dynamical system. First particles are somewhat cohesive, staying together rather than bouncing randomly through the scene. Additionally you see some particles sloshing around the side of the bounding box.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/rJbYhl9r4TU" frameborder="0" allowfullscreen></iframe>
+<h1>Challenges</h1>
+<p>We ran into a lot of issues that resulted in less of a working product than we planned for but which ultimately taught us much about working with these kinds of simulations. Our first hurtle was to get the pipeline working. Hardcoding the meshes directly in OpenGL caused a lot of difficulties in figuring out the proper coordinates to use and how to store the information to use for collision detection later. To combat this we came up with the pipeline we mentioned earlier (Detailed in parser.cpp).</p>
+<p>The second major issue was translating an academic paper into working code. While the algorithm is provided in detailed pseudo code, some of the nuance needed to go from math to code made it difficult to isolate issues when unexpected behavior revealed itself. This was the most difficult part of the project as it was more of a conceptual bottleneck then a programmatic one.</p>
+<p>Lastly incorrectly tuning the parameters in our model resulted in a lot of bizzare effects. Getting the gravitational constant correct, or the rest density of the fluid was key in avoiding unstable behavior and achieving convergence after some number of iterations. Additionaly finding the right distance to use to define neighbors and the constant in our tensile stability term were all very sensitive and needed to be tweaked.</p>
+<h1>Contributions</h1>
+<ul>
+	<li>Blake Tickell: Polygon pipeline, blender mesh parsing, base algorithm implementation </li>
+	<li>Victor Vong: gui video integration, algorithm adjustment, tensile instability implementation</li>
+</ul>
+
+<p><b>SOURCES:</b> 
+
+<lo>
+
+<li>
+<a href="http://mmacklin.com/pbf_sig_preprint.pdf"> Position Based Fluids -- Macklin and Müller</a>
+</li>
+
+<li>
+<a href="http://www.cs.umd.edu/class/fall2009/cmsc828v/presentations/Presentation1_Sep15.pdf"> Particle-Based Fluid Simulation For Interactive Application by Chrissie C. Cui</a>
+</li>
+
+</lo></p>
+
+<br><br><br>
+</body>
+</html>

@@ -12,11 +12,8 @@
 using namespace cv;
 using namespace std;
 
-/* Notes to Blake
-whenever you run for a new video file delete the old one. I dont have it overwrite the file yet.
-The png images should be overriden. If they arent delete the "result" folder and make a new one with the same name
-
-*/
+// ./sim scenes/scene1.obj
+// delete/rename video after each run
 
 int start = 0; // victor added
 
